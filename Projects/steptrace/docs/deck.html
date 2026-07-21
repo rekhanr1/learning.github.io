@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StepTrace — Deck</title>
+<meta name="description" content="StepTrace pitch deck: AI-powered digital work instructions with built-in quality metrics.">
+<style>
+  :root {
+    --bg: #eef1ef;
+    --bg-panel: #ffffff;
+    --bg-sunken: #e4e8e6;
+    --ink: #14181a;
+    --ink-muted: #55625f;
+    --ink-faint: #8b9895;
+    --line: #c7d0cc;
+    --line-strong: #9fada8;
+    --accent: #e8960c;
+    --accent-ink: #241a02;
+    --accent-strong: #c97c00;
+    --spec-blue: #2f5d74;
+    --ok: #1f7a4d;
+    --ok-bg: #e3f1e8;
+    --pending-bg: #fbeed9;
+    --pending-ink: #7a4d06;
+    --shadow: 0 1px 0 rgba(20, 24, 26, 0.06);
+    --font-display: "Bahnschrift SemiBold Condensed", "Bahnschrift", "Arial Narrow", "Roboto Condensed", "Segoe UI Semibold", "Segoe UI", sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "Cascadia Code", "SF Mono", "Consolas", "Liberation Mono", "Menlo", monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #14171a;
+    --bg-panel: #1b1f22;
+    --bg-sunken: #101315;
+    --ink: #edf1f0;
+    --ink-muted: #9caaa6;
+    --ink-faint: #647270;
+    --line: #2c3336;
+    --line-strong: #3c4548;
+    --accent: #f0a51e;
+    --accent-ink: #1c1400;
+    --accent-strong: #ffb838;
+    --spec-blue: #7fb1c9;
+    --ok: #3fc27f;
+    --ok-bg: #143224;
+    --pending-bg: #322506;
+    --pending-ink: #f0c477;
+    --shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171a;
+      --bg-panel: #1b1f22;
+      --bg-sunken: #101315;
+      --ink: #edf1f0;
+      --ink-muted: #9caaa6;
+      --ink-faint: #647270;
+      --line: #2c3336;
+      --line-strong: #3c4548;
+      --accent: #f0a51e;
+      --accent-ink: #1c1400;
+      --accent-strong: #ffb838;
+      --spec-blue: #7fb1c9;
+      --ok: #3fc27f;
+      --ok-bg: #143224;
+      --pending-bg: #322506;
+      --pending-ink: #f0c477;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    overflow: hidden;
+  }
+  body {
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    background-color: var(--bg);
+    opacity: 1;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    opacity: 0.86;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px clamp(16px, 4vw, 40px);
+    border-bottom: 1px solid var(--line);
+    flex: 0 0 auto;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .wordmark .chip {
+    width: 9px;
+    height: 9px;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .wordmark .sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    text-transform: none;
+    font-weight: 400;
+  }
+  .counter {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--ink-muted);
+    letter-spacing: 0.03em;
+  }
+  .counter b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Stage ---------- */
+  .stage-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 2.4vh, 28px) clamp(16px, 5vw, 56px);
+    min-height: 0;
+  }
+  .stage {
+    position: relative;
+    width: min(980px, 100%);
+    height: min(600px, 100%);
+    background: var(--bg-panel);
+    border: 1px solid var(--line-strong);
+    box-shadow: var(--shadow), 0 18px 40px -24px rgba(20, 24, 26, 0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .stage::before {
+    /* caution stripe, top edge */
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--accent) 0 14px,
+      var(--ink) 14px 28px
+    );
+    opacity: 0.9;
+  }
+  .tag {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .slide {
+    padding: 46px clamp(28px, 5vw, 64px) 34px;
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    animation: rise 380ms cubic-bezier(.2,.7,.2,1);
+  }
+  .slide.active { display: flex; }
+  @media (prefers-reduced-motion: reduce) {
+    .slide { animation: none !important; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--spec-blue);
+    margin: 0 0 10px;
+  }
+  h1.slide-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-size: clamp(26px, 3.4vw, 38px);
+    line-height: 1.08;
+    margin: 0 0 18px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .body-copy {
+    max-width: 64ch;
+  }
+  .body-copy p, .body-copy li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .body-copy p { margin: 0 0 12px; }
+  ul.points {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  ul.points li {
+    position: relative;
+    padding-left: 20px;
+  }
+  ul.points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 8px;
+    height: 2px;
+    background: var(--accent-strong);
+  }
+  .muted { color: var(--ink-muted); }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border: 1px solid var(--line-strong);
+    width: fit-content;
+    margin-bottom: 18px;
+  }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status.built { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+  .status.built .dot { background: var(--ok); }
+  .status.pending { background: var(--pending-bg); color: var(--pending-ink); border-color: var(--pending-ink); }
+  .status.pending .dot { background: var(--pending-ink); }
+  .status.note { background: var(--bg-sunken); color: var(--ink-muted); border-style: dashed; }
+  .status.note .dot { background: var(--ink-faint); }
+
+  .cols { display: grid; gap: 20px; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+  .card {
+    border: 1px solid var(--line);
+    background: var(--bg-sunken);
+    padding: 16px 18px;
+  }
+  .card h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 15px;
+    margin: 0 0 8px;
+  }
+  .card p { font-size: 14px; color: var(--ink-muted); margin: 0; line-height: 1.55; }
+
+  /* flow diagram — slide 4 */
+  .flow { display: flex; align-items: center; gap: 0; margin: 6px 0 4px; flex-wrap: wrap; }
+  .flow-step {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-panel);
+    padding: 10px 14px;
+    white-space: nowrap;
+  }
+  .flow-step.done { border-color: var(--ok); color: var(--ok); }
+  .flow-arrow { color: var(--ink-faint); padding: 0 10px; font-family: var(--font-mono); }
+
+  .placeholder-shot {
+    border: 1.5px dashed var(--line-strong);
+    background: var(--bg-sunken);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    color: var(--ink-faint);
+  }
+  .placeholder-shot .ph-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  table.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+  table.spec-table th, table.spec-table td {
+    text-align: left;
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.spec-table th {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  table.spec-table td.num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--spec-blue);
+  }
+
+  .legend-out { color: var(--ink-muted); }
+  .legend-out b { color: var(--ink); font-weight: 600; }
+
+  .closing-line {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.6vw, 27px);
+    line-height: 1.3;
+    color: var(--ink);
+    text-wrap: balance;
+    border-left: 3px solid var(--accent);
+    padding-left: 18px;
+    margin: 6px 0 0;
+  }
+
+  .fill { flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+  /* ---------- Footer / controls ---------- */
+  .controls {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 14px clamp(16px, 4vw, 40px) 20px;
+  }
+  .navbtn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--bg-panel);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    padding: 9px 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .navbtn:hover { border-color: var(--accent-strong); color: var(--accent-strong); }
+  .navbtn:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+  .navbtn:disabled { opacity: 0.35; cursor: default; }
+  .navbtn:disabled:hover { border-color: var(--line-strong); color: var(--ink); }
+
+  .rail {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    min-width: 0;
+  }
+  .tick {
+    height: 26px;
+    flex: 1 1 0;
+    min-width: 6px;
+    background: var(--line);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+  }
+  .tick:hover { background: var(--line-strong); }
+  .tick:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+  .tick.visited { background: var(--line-strong); }
+  .tick.current { background: var(--accent); }
+
+  .kbd-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .kbd-hint kbd {
+    border: 1px solid var(--line-strong);
+    padding: 1px 5px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: var(--bg-panel);
+  }
+
+  @media (max-width: 720px) {
+    .cols-3 { grid-template-columns: 1fr; }
+    .cols-2 { grid-template-columns: 1fr; }
+    .kbd-hint { display: none; }
+    .flow { flex-direction: column; align-items: flex-start; }
+    .flow-arrow { padding: 4px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="wordmark"><span class="chip"></span>StepTrace <span class="sub">// deck</span></div>
+    <div class="counter"><b id="counterCurrent">01</b> / <span id="counterTotal">10</span></div>
+  </header>
+
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="tag" id="stageTag">TRAVELER&nbsp;01/10</div>
+      <!-- slides injected here -->
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="navbtn" id="prevBtn" aria-label="Previous slide">&larr; Prev</button>
+    <div class="rail" id="rail" role="tablist" aria-label="Slide progress"></div>
+    <button class="navbtn" id="nextBtn" aria-label="Next slide">Next &rarr;</button>
+    <span class="kbd-hint"><kbd>&larr;</kbd><kbd>&rarr;</kbd> to navigate</span>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var slides = [
+    {
+      eyebrow: "01 — Title",
+      title: "StepTrace",
+      status: null,
+      body: function () {
+        return (
+          '<p style="font-size:19px;line-height:1.5;max-width:56ch;">' +
+          'Enable quality with a fully digitized ecosystem that removes manual inefficiencies and accelerates output.' +
+          '</p>' +
+          '<p class="muted" style="max-width:56ch;">AI-powered digital work instructions with built-in quality metrics.</p>' +
+          '<p class="muted">Built with Claude Code and Claude AI.</p>'
+        );
+      }
+    },
+    {
+      eyebrow: "02 — The problem",
+      title: "Paper doesn’t roll up into a dashboard",
+      status: null,
+      body: function () {
+        return (
+          '<ul class="points body-copy">' +
+          '<li>Manual processes disrupt the end-to-end process on a factory floor, creating gaps that affect overall quality.' +
+          '<ul class="points" style="margin-top:10px;">' +
+          '<li>The data gap: torque values, pass/fail results, and timing mostly live on paper or in people’s hands, not in a system.</li>' +
+          '</ul>' +
+          '</li>' +
+          '<li>Digitizing usually means someone re-typing a procedure by hand — slow enough that it rarely happens.</li>' +
+          '</ul>'
+        );
+      }
+    },
+    {
+      eyebrow: "03 — Personas",
+      title: "Three roles, one loop",
+      status: null,
+      body: function () {
+        return (
+          '<div class="cols cols-3">' +
+          '<div class="card"><h3>Engineer</h3><p>Authors the work instruction. Needs to digitize a paper procedure fast, and trust the extraction.</p></div>' +
+          '<div class="card"><h3>Technician</h3><p>Executes on the floor. Needs a fast, unambiguous, touch-friendly guide that doesn’t slow the job down.</p></div>' +
+          '<div class="card"><h3>Ops Lead</h3><p>Watches quality trends. Needs to see where yield drops and what drives rework, without digging through logs.</p></div>' +
+          '</div>'
+        );
+      }
+    },
+    {
+      eyebrow: "04 — Demo",
+      title: "Ingest: Engineer",
+      status: { kind: "built", label: "Built — Phase 1" },
+      body: function () {
+        return (
+          '<div class="flow">' +
+          '<span class="flow-step done">upload PDF/image</span><span class="flow-arrow">→</span>' +
+          '<span class="flow-step done">Claude parses steps</span><span class="flow-arrow">→</span>' +
+          '<span class="flow-step done">review / edit</span><span class="flow-arrow">→</span>' +
+          '<span class="flow-step done">publish v1.0</span>' +
+          '</div>' +
+          '<p class="muted" style="margin-top:16px;">Demoable end to end in well under a minute against either sample work instruction.</p>'
+        );
+      }
+    },
+    {
+      eyebrow: "05 — Demo",
+      title: "Execute: Technician",
+      status: { kind: "pending", label: "Planned — Phase 2" },
+      body: function () {
+        return (
+          '<div class="placeholder-shot">' +
+          '<span class="ph-label">Screenshot placeholder</span>' +
+          '<p class="muted" style="margin:0;">Guided, one-step-at-a-time execution view with required data capture (torque value, pass/fail, defect note) and automatic per-step timing.</p>' +
+          '</div>'
+        );
+      }
+    },
+    {
+      eyebrow: "06 — Demo",
+      title: "Analyze: Ops Lead",
+      status: { kind: "pending", label: "Planned — Phase 3" },
+      body: function () {
+        return (
+          '<div class="placeholder-shot">' +
+          '<span class="ph-label">Screenshot placeholder</span>' +
+          '<p class="muted" style="margin:0;">First-pass yield, average cycle time per step, and a defect Pareto over the run history.</p>' +
+          '</div>'
+        );
+      }
+    },
+    {
+      eyebrow: "07 — Metrics",
+      title: "The three numbers that matter",
+      status: { kind: "pending", label: "Real numbers — Phase 3" },
+      body: function () {
+        return (
+          '<table class="spec-table">' +
+          '<thead><tr><th>Metric</th><th>What it tells an Ops Lead</th><th>Value</th></tr></thead>' +
+          '<tbody>' +
+          '<tr><td>First-pass yield</td><td>How often a run completes with no rework</td><td class="num">TBD</td></tr>' +
+          '<tr><td>Cycle time / step</td><td>Where time actually goes, not just total time</td><td class="num">TBD</td></tr>' +
+          '<tr><td>Defect Pareto</td><td>Which steps generate most of the rework</td><td class="num">TBD</td></tr>' +
+          '</tbody></table>' +
+          '<p class="muted" style="margin-top:14px;">Sourced from a seeded dataset of ~30 fictional runs once Phase 3 lands.</p>'
+        );
+      }
+    },
+    {
+      eyebrow: "08 — Build economics",
+      title: "What changed by building this with AI",
+      status: { kind: "note", label: "Hours — fill in after Phase 4" },
+      body: function () {
+        return (
+          '<div class="cols cols-2">' +
+          '<div class="card"><h3>Accelerated</h3><p>Next.js/Prisma/Tailwind scaffold, the forced-tool-use JSON schema for document parsing, API route boilerplate, and two realistic sample PDFs — zero to working, type-checked, lint-clean app in one focused session.</p></div>' +
+          '<div class="card"><h3>Still needed judgment</h3><p>Adding a mock-parsing mode so the app is demoable without handing out an API key — without weakening the real parsing path that actually ships.</p></div>' +
+          '</div>'
+        );
+      }
+    },
+    {
+      eyebrow: "09 — Scope",
+      title: "Deliberately descoped",
+      status: null,
+      body: function () {
+        return (
+          '<p class="legend-out"><b>Out of scope:</b> auth/user management, multi-site support, revision workflows &amp; e-signatures, real-time collaboration, mobile app, offline mode, direct PLM/MES integration.</p>' +
+          '<p class="legend-out" style="margin-top:14px;"><b>Future work:</b> integration with PLM/MES, plus the compliance and scale (non-functional) requirements a production rollout would need. MES owns execution-data analytics at scale — StepTrace is the UX layer.</p>'
+        );
+      }
+    }
+  ];
+
+  var current = 0;
+  var stage = document.getElementById("stage");
+  var rail = document.getElementById("rail");
+  var prevBtn = document.getElementById("prevBtn");
+  var nextBtn = document.getElementById("nextBtn");
+  var counterCurrent = document.getElementById("counterCurrent");
+  var counterTotal = document.getElementById("counterTotal");
+  var stageTag = document.getElementById("stageTag");
+  var visited = new Array(slides.length).fill(false);
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function buildSlideEl(slide, index) {
+    var el = document.createElement("div");
+    el.className = "slide";
+    el.id = "slide-" + index;
+
+    var statusHtml = "";
+    if (slide.status) {
+      statusHtml =
+        '<div class="status ' + slide.status.kind + '"><span class="dot"></span>' + slide.status.label + '</div>';
+    }
+
+    el.innerHTML =
+      '<p class="eyebrow">' + slide.eyebrow + '</p>' +
+      '<h1 class="slide-title">' + slide.title + '</h1>' +
+      statusHtml +
+      '<div class="fill body-copy">' + slide.body() + '</div>';
+
+    return el;
+  }
+
+  function buildRail() {
+    slides.forEach(function (_, i) {
+      var b = document.createElement("button");
+      b.className = "tick";
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-label", "Go to slide " + (i + 1));
+      b.addEventListener("click", function () { goTo(i); });
+      rail.appendChild(b);
+    });
+  }
+
+  function render() {
+    slides.forEach(function (slide, i) {
+      var existing = document.getElementById("slide-" + i);
+      if (!existing) {
+        stage.appendChild(buildSlideEl(slide, i));
+      }
+    });
+
+    slides.forEach(function (_, i) {
+      var el = document.getElementById("slide-" + i);
+      el.classList.toggle("active", i === current);
+    });
+
+    var ticks = rail.querySelectorAll(".tick");
+    ticks.forEach(function (t, i) {
+      t.classList.toggle("current", i === current);
+      t.classList.toggle("visited", visited[i] && i !== current);
+      t.setAttribute("aria-selected", i === current ? "true" : "false");
+    });
+
+    counterCurrent.textContent = pad(current + 1);
+    counterTotal.textContent = pad(slides.length);
+    stageTag.textContent = "TRAVELER " + pad(current + 1) + "/" + pad(slides.length);
+
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+
+    visited[current] = true;
+  }
+
+  function goTo(i) {
+    if (i < 0 || i >= slides.length) return;
+    current = i;
+    render();
+  }
+
+  prevBtn.addEventListener("click", function () { goTo(current - 1); });
+  nextBtn.addEventListener("click", function () { goTo(current + 1); });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight" || e.key === "PageDown") { goTo(current + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { goTo(current - 1); }
+    else if (e.key === "Home") { goTo(0); }
+    else if (e.key === "End") { goTo(slides.length - 1); }
+  });
+
+  // touch swipe
+  var touchStartX = null;
+  stage.addEventListener("touchstart", function (e) {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  stage.addEventListener("touchend", function (e) {
+    if (touchStartX === null) return;
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { goTo(current + (dx < 0 ? 1 : -1)); }
+    touchStartX = null;
+  }, { passive: true });
+
+  buildRail();
+  render();
+})();
+</script>
+</body>
+</html>

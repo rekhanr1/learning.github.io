@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model WorkInstruction {
+  id             String    @id @default(cuid())
+  title          String
+  sourceFileName String
+  sourceFileType String // "pdf" | "image"
+  sourceFilePath String // path under /public
+  status         String    @default("draft") // "draft" | "published"
+  version        String    @default("1.0")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  publishedAt    DateTime?
+  steps          Step[]
+}
+
+model Step {
+  id                String          @id @default(cuid())
+  workInstructionId String
+  workInstruction   WorkInstruction @relation(fields: [workInstructionId], references: [id], onDelete: Cascade)
+  order             Int
+  title             String
+  description       String
+  tools             Json // string[]
+  materials         Json // string[]
+  caution           String?
+  captureType       String          @default("none") // "none" | "numeric" | "pass_fail" | "numeric_pass_fail"
+  specLabel         String?
+  specValue         String?
+  specUnit          String?
+}
